@@ -64,10 +64,10 @@ class HappyRules {
 	 */
 	protected function parseRules($rules)
 	{
-		if(is_array($rules))
-			return self::cleanArray($rules);
-		else if(is_string($rules))
+		if(is_string($rules))
 			return self::cleanArray(explode('|', $rules));
+		else if(is_array($rules))
+			return self::cleanArray($rules);
 		else if($rules == null)
 			return array();
 		else
@@ -139,7 +139,11 @@ class HappyRules {
 	 */
 	public function addRule($rule)
 	{
-		return (array_push($this->rules, $this->parseRules($rule)) > 0);
+		$r = 0;
+		foreach ($this->parseRules($rule) as $parsedRule) {
+			$r = array_push($this->rules,$parsedRule);
+		}
+		return $r>0 ;
 	}
 
 	/**

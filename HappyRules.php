@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * This file is part of HappyField, a field parser for the Moon Framework.
+ * See more at the GitHub page :
+ * - Of this project @[ https://github.com/lambda2/Happy-Field ]
+ * - Of the Moon project @[ https://github.com/lambda2/Moon ]
+ *
+ * ----------------------------------------------------------------------------
+ * (c) 2013 Lambdaweb - www.lambdaweb.fr
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Happy;
+
+include 'HappyFunctions.php';
+
+use \Happy\HappyFunctions;
+
+
 /**
  * Will define the rules to check for one (form) field.
  */
@@ -11,6 +31,8 @@ class HappyRules {
 	
 	protected $fieldErrors = array();
 	protected $debugErrors = array();
+
+	protected static $func_ns = 'Happy\HappyFunctions';
 
 
 	/**
@@ -29,6 +51,8 @@ class HappyRules {
 		: $this->label = $label;
 	}
 
+
+
 	/**
 	 * Will parse the rules string for return
 	 * an array of rules.
@@ -41,9 +65,9 @@ class HappyRules {
 	protected function parseRules($rules)
 	{
 		if(is_array($rules))
-			return $rules;
+			return self::cleanArray($rules);
 		else if(is_string($rules))
-			return explode('|', $rules);
+			return self::cleanArray(explode('|', $rules));
 		else if($rules == null)
 			return array();
 		else
@@ -53,20 +77,42 @@ class HappyRules {
 	}
 
 	/**
+	 * Clean the given array for the rules parsing.
+	 */
+	protected static function cleanArray($array)
+	{
+		$retArray = array();
+
+		foreach ($array as $key => $value) {
+			if(strlen($value) > 0 and $value != ' ')
+			{
+				$retArray[$key] = $value;
+			}
+		}
+		$retArray = array_values($retArray);
+		return $retArray;
+	}
+
+	/**
 	 * Will check if each rule exists.
-	 * @param array $rules the rules to check
 	 * @return true if all the rules exists, false otherwise.
 	 */
-	protected function checkRulesExists($rules)
+	public function checkRulesExists()
 	{
 		$valid = True;
 		$errors = array();
 
 		foreach ($this->rules as $key => $rule) {
 
-			$ruleArr = explode(' ',$rule);
+			$ruleArr = self::cleanArray(explode(' ',$rule));
 
-			if(count($ruleArr) > 0 and !function_exists($ruleArr[0]))
+			// echo 'class_exists('.self::$func_ns.') ? ';
+			// var_dump(class_exists(self::$func_ns));
+			// echo 'is_callable('.self::$func_ns.'::'.$ruleArr[0].') ? ';
+			// var_dump(is_callable(self::$func_ns.'::'.$ruleArr[0]));
+
+			if(count($ruleArr) > 0 
+				and !is_callable(self::$func_ns.'::'.$ruleArr[0]))
 			{
 				$errors[$rule] = 'The rule ['.$rule.'] doesn\'t exists !';
 				$valid = False;
@@ -96,16 +142,24 @@ class HappyRules {
 		return (array_push($this->rules, $this->parseRules($rule)) > 0);
 	}
 
+	/**
+	 * Clear all the rules
+	 */
+	public function clearRules()
+	{
+		$this->rules = array();
+	}
+
 
 	/**
 	 * Will check each rule.
 	 * @param array $rules the rules to check
 	 * @return true if all the rules are checked, false otherwise.
 	 */
-	public function checkRules($rules)
+	public function checkRules($testValue)
 	{
 
-		if($this->checkRulesExists($rules))
+		if($this->checkRulesExists())
 		{
 			$valid = True;
 			$errors = array();
@@ -114,7 +168,14 @@ class HappyRules {
 
 				$ruleArr = explode(' ',$rule);
 				$function_to_call = array_shift($ruleArr);
-				$result = call_user_func_array($function_to_call,$ruleArr);
+				array_unshift($ruleArr, $testValue);
+
+				// $result = call_user_func_array($function_to_call,$ruleArr);
+				$result = forward_static_call_array(
+					array(self::$func_ns,$function_to_call),
+					$ruleArr);
+
+				//$result = self::$func_ns.'::'.$function_to_call($ruleArr);
 				if($result !== true)
 				{
 					if(is_string($result))
@@ -138,6 +199,146 @@ class HappyRules {
 		else
 			return false;
 	}
+
+    /**
+     * Gets the value of field.
+     *
+     * @return string
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    /**
+     * Sets the value of field.
+     *
+     * @param mixed $field the field
+     *
+     * @return self
+     */
+    public function setField($field)
+    {
+        $this->field = $field;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of label.
+     *
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    /**
+     * Sets the value of label.
+     *
+     * @param mixed $label the label
+     *
+     * @return self
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of rules.
+     *
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Sets the value of rules.
+     *
+     * @param mixed $rules the rules
+     *
+     * @return self
+     */
+    public function setRules($rules)
+    {
+        $this->rules = $rules;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of fieldErrors.
+     *
+     * @return array
+     */
+    public function getFieldErrors()
+    {
+        return $this->fieldErrors;
+    }
+
+    /**
+     * Gets the string value of fieldErrors.
+     *
+     * @return string
+     */
+    public function getStrFieldErrors()
+    {
+        return implode('\n - ',$this->fieldErrors);
+    }
+
+    /**
+     * Sets the value of fieldErrors.
+     *
+     * @param mixed $fieldErrors the fieldErrors
+     *
+     * @return self
+     */
+    public function setFieldErrors($fieldErrors)
+    {
+        $this->fieldErrors = $fieldErrors;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of debugErrors.
+     *
+     * @return array
+     */
+    public function getDebugErrors()
+    {
+        return $this->debugErrors;
+    }
+
+    /**
+     * Gets the string value of debugErrors.
+     *
+     * @return string
+     */
+    public function getStrDebugErrors()
+    {
+        return implode('\n - ',$this->debugErrors);
+    }
+
+    /**
+     * Sets the value of debugErrors.
+     *
+     * @param mixed $debugErrors the debugErrors
+     *
+     * @return self
+     */
+    public function setDebugErrors($debugErrors)
+    {
+        $this->debugErrors = $debugErrors;
+
+        return $this;
+    }
 }
 
 ?>

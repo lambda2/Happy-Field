@@ -15,23 +15,17 @@
 
 namespace Happy;
 
-class HappyField {
+/**
+ * Will manage the human readable errors translation
+ * and the i18n [from a file ?]
+ * @TODO : Find a robust translation system !
+ * -> Maybe a translation yaml file ?
+ */
+class HappyErrors {
 
-
-
-
-
+	// There is nothing to do here... yet !
 
 }
-
-
-
-
-
-
-
-
-
 
 
 

@@ -67,9 +67,9 @@ class HappyRulesTest extends PHPUnit_Framework_TestCase {
 
     /**
      * tests the HappyRules constructor
-     * @covers HappyRules::__construct
-     * @covers HappyRules::parseRules
-     * @covers HappyRules::cleanArray
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::parseRules
+     * @covers Happy\HappyRules::cleanArray
      */
     public function testConstruct() {
         $err = 'Les regles ne sont pas converties en tableau dans le constructeur de HappyField !';
@@ -88,8 +88,9 @@ class HappyRulesTest extends PHPUnit_Framework_TestCase {
 
     /**
      * tests the rules existence
-     * @covers HappyRules::checkRulesExists
-     * @covers HappyRules::cleanArray
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::checkRulesExists
+     * @covers Happy\HappyRules::cleanArray
      */
     public function testCheckRulesExists() {
         $errExist = 'Une regle devrait exister, mais ce n\'est pas le cas...';
@@ -118,13 +119,22 @@ class HappyRulesTest extends PHPUnit_Framework_TestCase {
         $rules = new HappyRules('testSix','sup 8 | blabla 10');
         $this->assertFalse($rules->checkRulesExists(),
             $errNotExist.$rules->getStrDebugErrors());
+
+        $rules = new HappyRules('testArray',array('sup 8','inf 10'));
+        $this->assertTrue($rules->checkRulesExists(),
+            $errNotExist.$rules->getStrDebugErrors());
+
+        $rules = new HappyRules('testNull',null);
+        $this->assertTrue($rules->checkRulesExists(),
+            $errNotExist.$rules->getStrDebugErrors());
     }
 
     /**
      * tests the rules validation
-     * @covers HappyRules::checkRulesExists
-     * @covers HappyRules::cleanArray
-     * @covers HappyRules::checkRules
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::checkRulesExists
+     * @covers Happy\HappyRules::cleanArray
+     * @covers Happy\HappyRules::checkRules
      * @dataProvider getTestValues
      */
     public function testCheckRulesValid($testValue, $testRules, $expected) {
@@ -154,6 +164,67 @@ class HappyRulesTest extends PHPUnit_Framework_TestCase {
           array('7','sup 6|inf 6',false)
         );
     }
+
+    /**
+     * tests the getter and the setter of Field
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::getField
+     * @covers Happy\HappyRules::setField
+     */
+    public function testGetSetField() {
+        $rules = new HappyRules('test','sup 6|inf 10','Un label');
+        $this->assertEquals($rules->getField(), 'test');
+        $rules->setField('autreTest');
+        $this->assertEquals($rules->getField(), 'autreTest');
+    }
+
+    /**
+     * tests the getter and the setter of Label
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::getLabel
+     * @covers Happy\HappyRules::setLabel
+     */
+    public function testGetSetLabel() {
+        $rules = new HappyRules('test','sup 6|inf 10','Un label');
+        $this->assertEquals($rules->getLabel(), 'Un label');
+        $rules->setLabel('un autre label');
+        $this->assertEquals($rules->getLabel(), 'un autre label');
+    }
+
+    /**
+     * tests the getter and the setter of Rules
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::getRules
+     * @covers Happy\HappyRules::setRules
+     */
+    public function testGetSetRules() {
+        $rules = new HappyRules('test','sup 6|inf 10','Un Rules');
+        $this->assertEquals($rules->getRules(), array('sup 6','inf 10'));
+        $rules->setRules(array('equ 6','inf 12'));
+        $this->assertEquals($rules->getRules(), array('equ 6','inf 12'));
+    }
+
+    /**
+     * tests the getter and the setter of FieldErrors
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::getFieldErrors
+     * @covers Happy\HappyRules::setFieldErrors
+     * @covers Happy\HappyRules::getStrFieldErrors
+     * @covers Happy\HappyRules::getDebugErrors
+     * @covers Happy\HappyRules::setDebugErrors
+     * @covers Happy\HappyRules::getStrDebugErrors
+     */
+    public function testGetSetErrors() {
+        $rules = new HappyRules('test','sup 6|inf 10','Un FieldErrors');
+        $err = 'error';
+        $rules->getFieldErrors();
+        $rules->getDebugErrors();
+        $rules->getStrFieldErrors();
+        $rules->getStrDebugErrors();
+        $rules->setFieldErrors($err);
+        $rules->setDebugErrors($err);
+    }
+
 }
 
 // Call HappyRulesTest::main() if this source file is executed directly.

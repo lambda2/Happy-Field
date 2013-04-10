@@ -18,6 +18,13 @@ namespace Happy;
 /**
  * Will define a lot of basic functions
  * for validating the forms
+ * @package 	Happy
+ * @subpackage	Functions
+ * @category	Validation functions
+ * @copyright	Copyright (c) 2013, Lambdaweb
+ * @author 		Andre Aubin <andre.aubin@lambdaweb.fr>
+ * @since 		v1.0
+ * @link		http://lambda2.github.io/Happy-Field/
  */
 class HappyFunctions {
 
@@ -27,7 +34,7 @@ class HappyFunctions {
  ************************************************************************/
 
 	/**
-	 * @return true if $expression is strictly greater than $value
+	 * @return boolean true if $expression is strictly greater than $value
 	 */
 	public static function sup($expression, $value)
 	{
@@ -39,7 +46,7 @@ class HappyFunctions {
 	}
 
 	/**
-	 * @return true if $expression is strictly less than $value
+	 * @return boolean true if $expression is strictly less than $value
 	 */
 	public static function inf($expression, $value)
 	{
@@ -51,7 +58,7 @@ class HappyFunctions {
 	}
 
 	/**
-	 * @return true if $expression equals $value
+	 * @return boolean true if $expression equals $value
 	 */
 	public static function equ($expression, $value)
 	{
@@ -59,7 +66,7 @@ class HappyFunctions {
 	}
 
 	/**
-	 * @return false if $expression is empty
+	 * @return boolean false if $expression is empty
 	 */
 	public static function required($expression)
 	{
@@ -71,7 +78,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression is shorter then the parameter value
+	 * @return boolean false if $expression is shorter then the parameter value
 	 */
 	public static function minLength($expression, $val)
 	{
@@ -90,7 +97,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression is longer then the parameter value
+	 * @return boolean false if $expression is longer then the parameter value
 	 */
 	public static function maxLength($expression, $val)
 	{
@@ -109,7 +116,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression is not exactly the parameter value.
+	 * @return boolean false if $expression is not exactly the parameter value.
 	 */
 	public static function exactLength($expression, $val)
 	{
@@ -131,7 +138,7 @@ class HappyFunctions {
  ***********************************************************************/
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than alphabetical characters.
 	 */
 	public static function alpha($expression)
@@ -141,7 +148,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than  alpha-numeric characters.
 	 */
 	public static function alphaNum($expression)
@@ -151,7 +158,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than  alpha-numeric characters with underscores and dashes.
 	 */
 	public static function alphaNumDash($expression)
@@ -161,7 +168,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than numeric characters.
 	 */
 	public static function num($expression)
@@ -172,7 +179,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than numeric characters.
 	 */
 	public static function isNum($expression)
@@ -182,7 +189,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than an integer.
 	 */
 	public static function integer($expression)
@@ -192,7 +199,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than an double|float.
 	 */
 	public static function decimal($expression)
@@ -202,7 +209,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than a Natural number (0,1,2,3, etc.)
 	 */
 	public static function natural($expression)
@@ -211,7 +218,7 @@ class HappyFunctions {
 	}
 
 	/**
-	 * @return false if $expression contains anything other
+	 * @return boolean false if $expression contains anything other
 	 * than a Natural number exepted zero (1,2,3, etc.)
 	 */
 	public static function naturalNotZero($expression)
@@ -237,7 +244,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if $expression does not match
+	 * @return boolean false if $expression does not match
 	 * the one in parameter
 	 */
 	public static function regMatch($expression, $regex)
@@ -251,7 +258,7 @@ class HappyFunctions {
 	}
 
 	/**
-	 * @return false if $expression is not a valid email adress
+	 * @return boolean false if $expression is not a valid email adress
 	 */
 	public static function email($expression)
 	{
@@ -260,7 +267,7 @@ class HappyFunctions {
 
 
 	/**
-	 * @return false if any value provided in a comma separated list
+	 * @return boolean false if any value provided in a comma separated list
 	 * is not a valid email.
 	 */
 	public static function emails($expression)
@@ -288,7 +295,7 @@ class HappyFunctions {
 	 * Tests a string for characters outside of the Base64 alphabet
 	 * as defined by RFC 2045 http://www.faqs.org/rfcs/rfc2045
 	 *
-	 * @return false if $expression is not a valid base64 string.
+	 * @return boolean false if $expression is not a valid base64 string.
 	 */
 	public static function isBase64($expression)
 	{

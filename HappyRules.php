@@ -22,6 +22,13 @@ use \Happy\HappyFunctions;
 
 /**
  * Will define the rules to check for one (form) field.
+ * @package 	Happy
+ * @subpackage	Rules
+ * @category	Field Check
+ * @copyright	Copyright (c) 2013, Lambdaweb
+ * @author 		Andre Aubin <andre.aubin@lambdaweb.fr>
+ * @since 		v1.0
+ * @link		http://lambda2.github.io/Happy-Field/
  */
 class HappyRules {
 

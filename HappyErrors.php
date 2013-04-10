@@ -20,6 +20,13 @@ namespace Happy;
  * and the i18n [from a file ?]
  * @TODO : Find a robust translation system !
  * -> Maybe a translation yaml file ?
+ * @package     Happy
+ * @subpackage  Errors
+ * @category    Field Errors handling
+ * @copyright   Copyright (c) 2013, Lambdaweb
+ * @author      Andre Aubin <andre.aubin@lambdaweb.fr>
+ * @since       v1.0
+ * @link        http://lambda2.github.io/Happy-Field/
  */
 class HappyErrors {
 

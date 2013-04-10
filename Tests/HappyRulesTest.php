@@ -29,6 +29,13 @@ require_once 'PHPUnit/Autoload.php';
 
 /**
  * Test class for HappyRules.
+ * @package     Happy
+ * @subpackage  Tests
+ * @category    Rules Tests
+ * @copyright   Copyright (c) 2013, Lambdaweb
+ * @author      Andre Aubin <andre.aubin@lambdaweb.fr>
+ * @since       v1.0
+ * @link        http://lambda2.github.io/Happy-Field/
  */
 class HappyRulesTest extends PHPUnit_Framework_TestCase {
 

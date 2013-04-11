@@ -73,11 +73,11 @@ class HappyField {
 		 * specified rule(s) are valid. 
 		 */
 		$hr = new HappyRules($fieldName, $rules, $label);
-		$valid = $rh->checkRulesExists();
+		$valid = $hr->checkRulesExists();
 
 		if(!$valid and $this->showErrors)
 		{
-			throw new Exception($rh->getStrDebugErrors(), 1);
+			throw new Exception($hr->getStrDebugErrors(), 1);
 		}
 		else if($valid)
 		{
@@ -99,7 +99,8 @@ class HappyField {
 	 */
 	public function setFields($fields)
 	{
-		if(is_array($fields) and count($fields))
+		$valid = is_array($fields) and count($fields);
+		if($valid)
 		{
 			$this->fields = $fields;
 		}
@@ -108,7 +109,7 @@ class HappyField {
 			throw new Exception("Unable to set the fields : ".$fields, 1);
 		}
 
-		return count($this->fields) > 0;
+		return $valid;
 	}
 
 	/**
@@ -117,10 +118,10 @@ class HappyField {
 	 * 
 	 * @return boolean true if success, false otherwise.
 	 */
-	public function check($fields)
+	public function check()
 	{
 		// If we have no fields or no rules, run away !
-		if(count($this->fields) > 0 || count($this->rules) > 0)
+		if(!count($this->fields) > 0 || !count($this->rules) > 0)
 			return false;
 
 		$success = True;
@@ -129,9 +130,13 @@ class HappyField {
 
 			// if we have a rule without his field, the validation fail.
 			if(!array_key_exists($rule->getField(), $this->fields))
+			{
 				$success = False;
+				//echo "key do not exist : ".$rule->getField();
+			}
 			else
 			{
+				//echo "key exist : ".$rule->getField();
 				$result = $rule->checkRules($this->fields[$rule->getField()]);
 
 				if(!$result)
@@ -142,23 +147,33 @@ class HappyField {
 		return $success;
 	}
 
+    /**
+     * Sets the value of showErrors.
+     *
+     * @param mixed $showErrors the showErrors
+     *
+     * @return self
+     */
+    public function showErrors($showErrors)
+    {
+        $this->showErrors = $showErrors;
 
+        return $this;
+    }
+
+
+    /**
+     * Gets the 
+     * @var $fields will contain all the fields to validate..
+     *
+     * @return mixed
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ?>

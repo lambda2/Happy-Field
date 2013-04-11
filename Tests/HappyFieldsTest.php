@@ -211,6 +211,8 @@ class HappyFieldTest extends PHPUnit_Framework_TestCase {
             $this->hfield->check(), 
             'The HappyField is not correct (sameThat nom) '
             );
+
+        
     
     }
 

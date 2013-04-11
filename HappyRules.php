@@ -144,7 +144,8 @@ class HappyRules {
 			if(
 				count($ruleArr) > 0 
 				and !$this->isRuleMethod($ruleArr[0]) 
-				and !$this->isHappyFunction($ruleArr[0]))
+				and !$this->isHappyFunction($ruleArr[0])
+				and !is_callable($ruleArr[0]))
 			{
 				$errors[$rule] = 'The rule ['.$rule.'] doesn\'t exists !';
 				$valid = False;
@@ -218,6 +219,11 @@ class HappyRules {
 				{
 					$result = call_user_func_array(
 						array($this, $function_to_call),
+						$ruleArr);
+				}
+				else if(is_callable($function_to_call))
+				{
+					$result = call_user_func_array($function_to_call,
 						$ruleArr);
 				}
 

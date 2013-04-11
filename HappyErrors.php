@@ -27,6 +27,7 @@ namespace Happy;
  * @author      Andre Aubin <andre.aubin@lambdaweb.fr>
  * @since       v1.0
  * @link        http://lambda2.github.io/Happy-Field/
+ * @deprecated  not used, and maybe never...
  */
 class HappyErrors {
 

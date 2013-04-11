@@ -72,7 +72,7 @@ class HappyField {
 		 * We create the new rule and we check if the
 		 * specified rule(s) are valid. 
 		 */
-		$hr = new HappyRules($fieldName, $rules, $label);
+		$hr = new HappyRules($fieldName, $rules, $label,$this);
 		$valid = $hr->checkRulesExists();
 
 		if(!$valid and $this->showErrors)

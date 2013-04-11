@@ -39,6 +39,8 @@ class HappyRules {
 	protected $fieldErrors = array();
 	protected $debugErrors = array();
 
+	protected $hf;
+
 	protected static $func_ns = 'Happy\HappyFunctions';
 
 
@@ -47,8 +49,9 @@ class HappyRules {
 	 * @param string $fieldName the name of the field in the form
 	 * @param string|array $rules the rules to check
 	 * @param string $label the label of the field for the error message
+	 * @param HappyField $hf the HappyField to refer to.
 	 */
-	public function __construct($fieldName, $rules, $label = '')
+	public function __construct($fieldName, $rules, $label = '', &$hf=null)
 	{
 		$this->field = $fieldName;
 		$this->rules = $this->parseRules($rules);
@@ -56,6 +59,8 @@ class HappyRules {
 		$label == '' 
 		? $this->label = $fieldName 
 		: $this->label = $label;
+
+		$this->hf = $hf;
 	}
 
 
@@ -101,6 +106,24 @@ class HappyRules {
 	}
 
 	/**
+	 * @return boolean true if the method 
+	 * is a HappyRules method.
+	 */
+	public function isRuleMethod($func)
+	{
+		return method_exists(get_class($this),$func);
+	}
+
+	/**
+	 * @return boolean true if the function 
+	 * is defined in HappyFunctions
+	 */
+	public function isHappyFunction($func)
+	{
+		return is_callable(self::$func_ns.'::'.$func);
+	}
+
+	/**
 	 * Will check if each rule exists.
 	 * @return true if all the rules exists, false otherwise.
 	 */
@@ -118,8 +141,10 @@ class HappyRules {
 			// echo 'is_callable('.self::$func_ns.'::'.$ruleArr[0].') ? ';
 			// var_dump(is_callable(self::$func_ns.'::'.$ruleArr[0]));
 
-			if(count($ruleArr) > 0 
-				and !is_callable(self::$func_ns.'::'.$ruleArr[0]))
+			if(
+				count($ruleArr) > 0 
+				and !$this->isRuleMethod($ruleArr[0]) 
+				and !$this->isHappyFunction($ruleArr[0]))
 			{
 				$errors[$rule] = 'The rule ['.$rule.'] doesn\'t exists !';
 				$valid = False;
@@ -177,22 +202,30 @@ class HappyRules {
 
 			foreach ($this->rules as $key => $rule) {
 
+				$result = false;
+
 				$ruleArr = explode(' ',$rule);
 				$function_to_call = array_shift($ruleArr);
 				array_unshift($ruleArr, $testValue);
 
-				// $result = call_user_func_array($function_to_call,$ruleArr);
-				$result = forward_static_call_array(
-					array(self::$func_ns,$function_to_call),
-					$ruleArr);
+				if($this->isHappyFunction($function_to_call))
+				{
+					$result = forward_static_call_array(
+						array(self::$func_ns,$function_to_call),
+						$ruleArr);
+				}
+				else if($this->isRuleMethod($function_to_call))
+				{
+					$result = call_user_func_array(
+						array($this, $function_to_call),
+						$ruleArr);
+				}
 
 				//$result = self::$func_ns.'::'.$function_to_call($ruleArr);
 				if($result !== true)
 				{
-					if(is_string($result))
-					{
-						$errors[$rule] = $result;
-					}
+					$errors[$testValue] = $function_to_call;
+					
 					$valid = False;
 				}
 
@@ -350,6 +383,25 @@ class HappyRules {
 
         return $this;
     }
+
+
+
+/***********************************************************************
+ *                        Multifields functions                        *
+ ***********************************************************************/
+
+	public function sameThat($expression, $field)
+	{
+		if($this->hf != null and array_key_exists($field, $this->hf->getFields()))
+		{
+			$f = $this->hf->getFields();
+			return $f[$field] == $expression;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
 
 ?>

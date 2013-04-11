@@ -92,6 +92,55 @@ class HappyRulesTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    /**
+     * tests the HappyRules isRuleMethod()
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::isRuleMethod
+     */
+    public function testRuleMethod() {
+
+        $rules = new HappyRules('testOne','sup 10');
+
+        $this->assertTrue(
+            $rules->isRuleMethod('isRuleMethod'),
+            'it is a rule method !');
+
+        $this->assertFalse(
+            $rules->isRuleMethod('notAMethod'),
+            'it is not a rule method !');
+
+        $this->assertTrue(
+            $rules->isRuleMethod('checkRulesExists'),
+            'it is a rule method !');
+
+        $this->assertTrue(
+            $rules->isRuleMethod('sameThat'),
+            'it is a rule method !');
+    }
+
+
+    /**
+     * tests the HappyRules isRuleMethod()
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::isHappyFunction
+     */
+    public function testHappyFunction() {
+
+        $rules = new HappyRules('testOne','sup 10');
+
+        $this->assertTrue(
+            $rules->isHappyFunction('sup'),
+            'it is a Happy Function !');
+
+        $this->assertFalse(
+            $rules->isHappyFunction('isRuleMethod'),
+            'it is not a Happy Function !');
+
+        $this->assertTrue(
+            $rules->isHappyFunction('email'),
+            'it is a Happy Function !');
+    }
+
 
     /**
      * tests the rules existence

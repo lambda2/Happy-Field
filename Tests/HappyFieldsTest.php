@@ -77,6 +77,21 @@ class HappyFieldTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Returns sample post (with duplicates) array
+     */
+    public function getSampleDuplicatePost()
+    {
+        return array(
+            'nom' => 'Aubin',
+            'conf_nom' => 'Aubinn',
+            'prenom' => 'Andre',
+            'conf_prenom' => 'Andre',
+            'age' => 20,
+            'email' => 'contact@lambdaweb.fr'
+        );
+    }
+
+    /**
      * tests the rules existence
      * @covers Happy\HappyField::__construct
      * @covers Happy\HappyField::addRule
@@ -145,6 +160,58 @@ class HappyFieldTest extends PHPUnit_Framework_TestCase {
             );
 
 
+    }
+
+
+    /**
+     * tests the HappyRules sameThat()
+     * @covers Happy\HappyRules::__construct
+     * @covers Happy\HappyRules::sameThat
+     */
+    public function testSameThat() {
+
+        
+        $this->hfield->showErrors(false);
+
+        $this->assertTrue(
+            $this->hfield->setFields($this->getSampleDuplicatePost()), 
+            'unable to add sample (duplicates) fields to validation.'
+            );
+
+        $this->assertTrue(
+            $this->hfield->addRule('prenom','alpha','surname'),
+            'The supplied rule (alpha) is false !'
+            );
+
+        $this->assertTrue(
+            $this->hfield->check(), 
+            'The HappyField is not correct (prenom is not a alpha ?!)'
+            );
+
+        $this->assertTrue(
+            $this->hfield->addRule('conf_prenom','sameThat prenom','surname confirmation'),
+            'The supplied rule (alpha) is false !'
+            );
+
+        $this->assertTrue(
+            $this->hfield->check(), 
+            'The HappyField is not correct (prenom is not a alpha ?!)'
+            );
+
+
+        $this->assertTrue(
+            $this->hfield->addRule(
+                'conf_nom',
+                'sameThat nom',
+                'surname confirmation'),
+            'The supplied rule (sameThat) is false !'
+            );
+
+        $this->assertFalse(
+            $this->hfield->check(), 
+            'The HappyField is not correct (sameThat nom) '
+            );
+    
     }
 
     

@@ -155,7 +155,7 @@ class HappyFunctionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testTypeFunctions($testValue, $testRules, $expected) {
 
-        $errExist = 'Ce test est incorrect';
+        $errExist = 'Ce test est incorrect : ';
         $this->hrule->clearRules();
         $this->hrule->addRule($testRules);
         $result = $this->hrule->checkRules($testValue);

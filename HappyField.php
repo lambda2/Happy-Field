@@ -68,23 +68,87 @@ class HappyField {
 	 */
 	public function addRule($fieldName, $rules, $label = '')
 	{
-		/* 
-		 * We create the new rule and we check if the
-		 * specified rule(s) are valid. 
-		 */
-		$hr = new HappyRules($fieldName, $rules, $label,$this);
-		$valid = $hr->checkRulesExists();
 
-		if(!$valid and $this->showErrors)
+		$valid = false;
+		/* 
+		 * If the rule exists, we just add new rules to the
+		 * existing one.
+		 */
+		if(array_key_exists($fieldName, $this->rules))
 		{
-			throw new Exception($hr->getStrDebugErrors(), 1);
+			$this->rules[$fieldName]->addRule($rules);
+			if($label != '')
+			{
+				$this->rules[$fieldName]->setLabel($label);
+			}
+			$valid = true;
 		}
-		else if($valid)
+		else
 		{
-			$this->rules[] = $hr;
+			/* 
+			 * We create the new rule and we check if the
+			 * specified rule(s) are valid. 
+			 */
+			$hr = new HappyRules($fieldName, $rules, $label,$this);
+			$valid = $hr->checkRulesExists();
+
+			if(!$valid and $this->showErrors)
+			{
+				throw new Exception($hr->getStrDebugErrors(), 1);
+			}
+			else if($valid)
+			{
+				$this->rules[$fieldName] = $hr;
+			}
 		}
 
 		return $valid;
+	}
+
+	/**
+	 * Will load all the rules contained in the 
+	 * given array.
+	 * Example structure : 
+	 *  ---------------------------------------------
+	 * |
+	 * | array(
+	 * |     'nom' => 
+	 * |         array(
+	 * |             'label' => 'family name',
+	 * |             'rules' => 'minLenght 3|maxLength 14|alpha'
+	 * |         ),
+	 * |     'email' => 
+	 * |         array(
+	 * |             'label' => 'email adress',
+	 * |             'rules' => 'email'
+	 * |         ),
+	 * | )
+	 * |
+	 *  ---------------------------------------------
+	 * 
+	 * @return HappyField self
+	 */
+	public function loadRulesFromArray($array)
+	{
+		foreach ($array as $field => $rule) {
+
+			$label = '';
+			$rules = '';
+
+			if(array_key_exists('label', $rule))
+			{
+				$label = $rule['label'];
+			}
+
+			if(array_key_exists('rules', $rule))
+			{
+				$rules = $rule['rules'];
+			}
+
+			$this->addRule($field, $rules, $label);
+		}
+
+		return $this;
 	}
 
 	/**
@@ -171,6 +235,31 @@ class HappyField {
     public function getFields()
     {
         return $this->fields;
+    }
+
+    /**
+     * Return the rule corresponding to the 
+     * specified field.
+     * @param string the name of the field
+     * @return HappyRules the rule for the specified field.
+     */
+    public function getRule($fieldName)
+    {
+    	if(array_key_exists($fieldName, $this->rules))
+    		return $this->rules[$fieldName];
+    	else
+    		throw new \Exception("Key $fieldName not found in the rules !", 1);
+    		
+    		//return false;
+    }
+
+    /**
+     * Return all the rules
+     * @return array all the saved rules.
+     */
+    public function getRules()
+    {
+    	return $this->rules;
     }
 
 }

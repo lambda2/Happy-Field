@@ -92,6 +92,100 @@ class HappyFieldTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Returns sample array with test rules.
+     */
+    public function getSampleTestTree()
+    {
+        return array(
+            'nom' => 
+                array(
+                    'label' => 'Nom de famille',
+                    'rules' => 'minLength 3|maxLength 14|alpha'
+                ),
+            'email' => 
+                array(
+                    'label' => 'Adresse e-mail',
+                    'rules' => 'email'
+                ),
+        );
+    }
+
+    /**
+     * tests the add rules from array system
+     * @covers Happy\HappyField::__construct
+     * @covers Happy\HappyField::loadRulesFromArray
+     * @covers Happy\HappyField::showErrors
+     */
+    public function testAddRuleFromArray() {
+
+        $this->hfield->showErrors(false);
+
+        $rules = $this->getSampleTestTree();
+
+        $this->assertTrue(
+            $this->hfield->setFields($this->getSamplePost()), 
+            'unable to add sample fields to validation.'
+            );
+
+        $this->hfield->loadRulesFromArray($rules);
+
+        echo "\nNom : \n";
+        echo "\trules : ".join(',',$this->hfield->getRule('nom')->getRules())."\n";
+        echo "\tlabel : ".$this->hfield->getRule('nom')->getLabel()."\n";
+
+        echo "\nEmail: \n";
+        echo "\trules : ".join(',',$this->hfield->getRule('email')->getRules())."\n";
+        echo "\tlabel : ".$this->hfield->getRule('email')->getLabel()."\n";
+
+
+        $this->assertTrue(
+            $this->hfield->check(), 
+            'Cannot check with array loading !'
+            );
+
+    }
+
+    /**
+     * tests the add rules overriding
+     * @covers Happy\HappyField::__construct
+     * @covers Happy\HappyField::addRule
+     * @covers Happy\HappyField::setFields
+     * @covers Happy\HappyField::showErrors
+     */
+    public function testAddRuleCheck() {
+
+        $this->hfield->showErrors(false);
+
+        $this->assertTrue(
+            $this->hfield->setFields($this->getSamplePost()), 
+            'unable to add sample fields to validation.'
+            );
+
+        $this->assertTrue(
+            $this->hfield->addRule('prenom','alpha','surname'),
+            'The supplied rule (alpha) is false !'
+            );
+
+
+        $this->assertTrue(
+            $this->hfield->addRule('prenom','',''),
+            'The supplied rule (None) is false !'
+            );
+
+        $this->assertTrue(
+            $this->hfield->addRule('prenom','num','Un beau prénom !'),
+            'The supplied rule (num) is false !'
+            );
+
+        $this->assertFalse(
+            $this->hfield->check(), 
+            'The HappyField is not correct (prenom is not a alpha ?!)'
+            );
+
+
+    }
+
+    /**
      * tests the rules existence
      * @covers Happy\HappyField::__construct
      * @covers Happy\HappyField::addRule

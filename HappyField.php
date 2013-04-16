@@ -94,7 +94,7 @@ class HappyField {
 
 			if(!$valid and $this->showErrors)
 			{
-				throw new Exception($hr->getStrDebugErrors(), 1);
+				throw new \Exception($hr->getStrDebugErrors(), 1);
 			}
 			else if($valid)
 			{
@@ -185,7 +185,7 @@ class HappyField {
 	public function check()
 	{
 		// If we have no fields or no rules, run away !
-		if(!count($this->fields) > 0 || !count($this->rules) > 0)
+		if(count($this->fields) > 0 && count($this->rules) == 0)
 			return false;
 
 		$success = True;
@@ -260,6 +260,16 @@ class HappyField {
     public function getRules()
     {
     	return $this->rules;
+    }
+
+    /**
+     * Clear all the previously saved rules.
+     * @return self
+     */
+    public function clearRules()
+    {
+    	$this->rules = array();
+    	return $this;
     }
 
 }

@@ -185,8 +185,10 @@ class HappyField {
 	public function check()
 	{
 		// If we have no fields or no rules, run away !
+		/*
 		if(count($this->fields) > 0 && count($this->rules) == 0)
 			return false;
+		*/
 
 		$success = True;
 

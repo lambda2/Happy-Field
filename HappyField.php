@@ -151,6 +151,22 @@ class HappyField {
 		return $this;
 	}
 
+    /**
+     * @TODO : SERIOUSLY NEED TO HANDLE NICE ERROR MESSAGES !
+     * return the rules who caused an error in the validation
+     * process...
+     */
+    public function getRulesErrors()
+    {
+        $errors = array();
+        foreach ($this->rules as $field) {
+            $err = $field->getStrFieldErrors();
+            if(count($err))
+                $errors[] = $field->getField().'-'.$field->getLabel().' : '.$err;
+        }
+        return implode(',',($errors));
+    }
+
 	/**
 	 * Will set the fields to be validated.
 	 * 
@@ -198,7 +214,7 @@ class HappyField {
 			if(!array_key_exists($rule->getField(), $this->fields))
 			{
 				$success = False;
-				//echo "key do not exist : ".$rule->getField();
+				echo "key do not exist : ".$rule->getField();
 			}
 			else
 			{
@@ -209,6 +225,8 @@ class HappyField {
 					$success = false;
 			}
 		}
+        if($success == False)
+            echo 'Resultat faux !';
 
 		return $success;
 	}

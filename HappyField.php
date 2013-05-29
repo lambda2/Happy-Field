@@ -20,7 +20,7 @@ include 'HappyRules.php';
 use \Happy\HappyRules;
 
 /**
- * 
+ *
  * @package 	Happy
  * @subpackage	Rules
  * @category	Field Check
@@ -43,6 +43,12 @@ class HappyField {
 
 	protected $showErrors = true;
 
+    /**
+     * @var $errorReport will contain all the errors of
+     * the previous check
+     */
+    protected $errorReport = array();
+
 	/**
 	 * Will construct a new HappyField
 	 */
@@ -57,20 +63,20 @@ class HappyField {
 	 * for example, if you want check than a value is greater
 	 * than 0 and lesser than 10, the rules are:
 	 * [ 'sup 0 | inf 10' ] OR [ array('sup 0','inf 10') ]
-	 * 
+	 *
 	 * @param string $fieldName the name of the field in the form
 	 * @param string|array $rules the rules to check
 	 * @param string $label the label of the field for the error message
 	 * @return boolean true if the rules is correct, false otherwise
 	 * @throws Exception if the rule isn't valid and [showErrors] is true
-	 * 
+	 *
 	 * @see HappyField::showErrors
 	 */
 	public function addRule($fieldName, $rules, $label = '')
 	{
 
 		$valid = false;
-		/* 
+		/*
 		 * If the rule exists, we just add new rules to the
 		 * existing one.
 		 */
@@ -85,9 +91,9 @@ class HappyField {
 		}
 		else
 		{
-			/* 
+			/*
 			 * We create the new rule and we check if the
-			 * specified rule(s) are valid. 
+			 * specified rule(s) are valid.
 			 */
 			$hr = new HappyRules($fieldName, $rules, $label,$this);
 			$valid = $hr->checkRulesExists();
@@ -106,18 +112,18 @@ class HappyField {
 	}
 
 	/**
-	 * Will load all the rules contained in the 
+	 * Will load all the rules contained in the
 	 * given array.
-	 * Example structure : 
+	 * Example structure :
 	 *  ---------------------------------------------
 	 * |
 	 * | array(
-	 * |     'nom' => 
+	 * |     'nom' =>
 	 * |         array(
 	 * |             'label' => 'family name',
 	 * |             'rules' => 'minLenght 3|maxLength 14|alpha'
 	 * |         ),
-	 * |     'email' => 
+	 * |     'email' =>
 	 * |         array(
 	 * |             'label' => 'email adress',
 	 * |             'rules' => 'email'
@@ -125,7 +131,7 @@ class HappyField {
 	 * | )
 	 * |
 	 *  ---------------------------------------------
-	 * 
+	 *
 	 * @return HappyField self
 	 */
 	public function loadRulesFromArray($array)
@@ -158,22 +164,16 @@ class HappyField {
      */
     public function getRulesErrors()
     {
-        $errors = array();
-        foreach ($this->rules as $field) {
-            $err = $field->getStrFieldErrors();
-            if(count($err))
-                $errors[] = $field->getField().'-'.$field->getLabel().' : '.$err;
-        }
-        return implode(',',($errors));
+        return $this->errorReport;
     }
 
 	/**
 	 * Will set the fields to be validated.
-	 * 
-	 * @param array $fields an array with the fields names as 
+	 *
+	 * @param array $fields an array with the fields names as
 	 * keys, and the fields values as values. You can
 	 * directly pass the $_POST or $_GET array.
-	 * 
+	 *
 	 * @throws Exception if the fields aren't valid and [showErrors] is true
 	 * @return boolean true if success, false otherwise.
 	 */
@@ -195,7 +195,7 @@ class HappyField {
 	/**
 	 * Will launch the check of each added rule
 	 * according to the values of the supplied fields.
-	 * 
+	 *
 	 * @return boolean true if success, false otherwise.
 	 */
 	public function check()
@@ -210,23 +210,29 @@ class HappyField {
 
 		foreach ($this->rules as $rule) {
 
-			// if we have a rule without his field, the validation fail.
+	/*		// if we have a rule without his field, the validation fail.
 			if(!array_key_exists($rule->getField(), $this->fields))
 			{
 				$success = False;
-				echo "key do not exist : ".$rule->getField();
+				echo "<p>key do not exist : ".$rule->getField()." in fields [ ".arr2str($this->fields)." ] </p>";
 			}
 			else
-			{
+			{*/
 				//echo "key exist : ".$rule->getField();
-				$result = $rule->checkRules($this->fields[$rule->getField()]);
+                if(array_key_exists($rule->getField(),$this->fields))
+                {
+				    $result = $rule->checkRules($this->fields[$rule->getField()]);
+                }
 
 				if(!$result)
+                {
+                    $this->errorReport[$rule->getField()] = $rule->getFieldErrors();
 					$success = false;
-			}
+                }
+		/*	}*/
 		}
         if($success == False)
-            echo 'Resultat faux !';
+            echo '<p>Resultat faux !</p>';
 
 		return $success;
 	}
@@ -247,7 +253,7 @@ class HappyField {
 
 
     /**
-     * Gets the 
+     * Gets the
      * @var $fields will contain all the fields to validate..
      *
      * @return mixed
@@ -258,7 +264,7 @@ class HappyField {
     }
 
     /**
-     * Return the rule corresponding to the 
+     * Return the rule corresponding to the
      * specified field.
      * @param string the name of the field
      * @return HappyRules the rule for the specified field.

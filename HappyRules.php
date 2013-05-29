@@ -56,8 +56,8 @@ class HappyRules {
 		$this->field = $fieldName;
 		$this->rules = $this->parseRules($rules);
 
-		$label == '' 
-		? $this->label = $fieldName 
+		$label == ''
+		? $this->label = $fieldName
 		: $this->label = $label;
 
 		$this->hf = $hf;
@@ -70,7 +70,7 @@ class HappyRules {
 	 * an array of rules.
 	 * The rules must be an array or a string
 	 * where rules are separed by the | character.
-	 * @param string/array $rules 
+	 * @param string/array $rules
 	 * @throws Exception if $rules is not a string or an array
 	 * @return An array containing the parsed rules
 	 */
@@ -106,7 +106,7 @@ class HappyRules {
 	}
 
 	/**
-	 * @return boolean true if the method 
+	 * @return boolean true if the method
 	 * is a HappyRules method.
 	 */
 	public function isRuleMethod($func)
@@ -115,7 +115,7 @@ class HappyRules {
 	}
 
 	/**
-	 * @return boolean true if the function 
+	 * @return boolean true if the function
 	 * is defined in HappyFunctions
 	 */
 	public function isHappyFunction($func)
@@ -142,8 +142,8 @@ class HappyRules {
 			// var_dump(is_callable(self::$func_ns.'::'.$ruleArr[0]));
 
 			if(
-				count($ruleArr) > 0 
-				and !$this->isRuleMethod($ruleArr[0]) 
+				count($ruleArr) > 0
+				and !$this->isRuleMethod($ruleArr[0])
 				and !$this->isHappyFunction($ruleArr[0])
 				and !is_callable($ruleArr[0]))
 			{
@@ -165,7 +165,7 @@ class HappyRules {
 	/**
 	 * Add the rule to the other rules.
 	 * The rule can be a simple rule, an array
-	 * of rules or a string where rules are 
+	 * of rules or a string where rules are
 	 * separed by the | character.
 	 * @param string|array the rule to add
 	 * @return true if succes, false otherwise.
@@ -241,7 +241,7 @@ class HappyRules {
 			 * We add the unchecked rules to the error
 			 * array
 			 */
-			if(count($errors))
+			if(count($errors) > 0)
 				$this->fieldErrors = $errors;
 
 			return $valid;

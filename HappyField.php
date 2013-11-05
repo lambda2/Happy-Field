@@ -31,17 +31,17 @@ use \Happy\HappyRules;
  */
 class HappyField {
 
-	/**
-	 * @var $rules will contain all the rules
-	 */
-	protected $rules = array();
+    /**
+     * @var $rules will contain all the rules
+     */
+    protected $rules = array();
 
-	/**
-	 * @var $fields will contain all the fields to validate.
-	 */
-	protected $fields = array();
+    /**
+     * @var $fields will contain all the fields to validate.
+     */
+    protected $fields = array();
 
-	protected $showErrors = true;
+    protected $showErrors = true;
 
     /**
      * @var $errorReport will contain all the errors of
@@ -49,113 +49,113 @@ class HappyField {
      */
     protected $errorReport = array();
 
-	/**
-	 * Will construct a new HappyField
-	 */
-	public function __construct()
-	{
+    /**
+     * Will construct a new HappyField
+     */
+    public function __construct()
+    {
 
+    }
+
+    /**
+     * Add a new rule for the specified field.
+     * The different rules can be separated by a '|' ,
+     * for example, if you want check than a value is greater
+     * than 0 and lesser than 10, the rules are:
+     * [ 'sup 0 | inf 10' ] OR [ array('sup 0','inf 10') ]
+     *
+     * @param string $fieldName the name of the field in the form
+     * @param string|array $rules the rules to check
+     * @param string $label the label of the field for the error message
+     * @return boolean true if the rules is correct, false otherwise
+     * @throws Exception if the rule isn't valid and [showErrors] is true
+     *
+     * @see HappyField::showErrors
+     */
+    public function addRule($fieldName, $rules, $label = '')
+    {
+
+	$valid = false;
+	/*
+	 * If the rule exists, we just add new rules to the
+	 * existing one.
+	 */
+	if(array_key_exists($fieldName, $this->rules))
+	{
+	    $this->rules[$fieldName]->addRule($rules);
+	    if($label != '')
+	    {
+		$this->rules[$fieldName]->setLabel($label);
+	    }
+	    $valid = true;
+	}
+	else
+	{
+	    /*
+	     * We create the new rule and we check if the
+	     * specified rule(s) are valid.
+	     */
+	    $hr = new HappyRules($fieldName, $rules, $label,$this);
+	    $valid = $hr->checkRulesExists();
+
+	    if(!$valid and $this->showErrors)
+	    {
+		throw new \Exception($hr->getStrDebugErrors(), 1);
+	    }
+	    else if($valid)
+	    {
+		$this->rules[$fieldName] = $hr;
+	    }
 	}
 
-	/**
-	 * Add a new rule for the specified field.
-	 * The different rules can be separated by a '|' ,
-	 * for example, if you want check than a value is greater
-	 * than 0 and lesser than 10, the rules are:
-	 * [ 'sup 0 | inf 10' ] OR [ array('sup 0','inf 10') ]
-	 *
-	 * @param string $fieldName the name of the field in the form
-	 * @param string|array $rules the rules to check
-	 * @param string $label the label of the field for the error message
-	 * @return boolean true if the rules is correct, false otherwise
-	 * @throws Exception if the rule isn't valid and [showErrors] is true
-	 *
-	 * @see HappyField::showErrors
-	 */
-	public function addRule($fieldName, $rules, $label = '')
-	{
+	return $valid;
+    }
 
-		$valid = false;
-		/*
-		 * If the rule exists, we just add new rules to the
-		 * existing one.
-		 */
-		if(array_key_exists($fieldName, $this->rules))
-		{
-			$this->rules[$fieldName]->addRule($rules);
-			if($label != '')
-			{
-				$this->rules[$fieldName]->setLabel($label);
-			}
-			$valid = true;
-		}
-		else
-		{
-			/*
-			 * We create the new rule and we check if the
-			 * specified rule(s) are valid.
-			 */
-			$hr = new HappyRules($fieldName, $rules, $label,$this);
-			$valid = $hr->checkRulesExists();
+    /**
+     * Will load all the rules contained in the
+     * given array.
+     * Example structure :
+     *  ---------------------------------------------
+     * |
+     * | array(
+     * |     'nom' =>
+     * |         array(
+     * |             'label' => 'family name',
+     * |             'rules' => 'minLenght 3|maxLength 14|alpha'
+     * |         ),
+     * |     'email' =>
+     * |         array(
+     * |             'label' => 'email adress',
+     * |             'rules' => 'email'
+     * |         ),
+     * | )
+     * |
+     *  ---------------------------------------------
+     *
+     * @return HappyField self
+     */
+    public function loadRulesFromArray($array)
+    {
+	foreach ($array as $field => $rule) {
 
-			if(!$valid and $this->showErrors)
-			{
-				throw new \Exception($hr->getStrDebugErrors(), 1);
-			}
-			else if($valid)
-			{
-				$this->rules[$fieldName] = $hr;
-			}
-		}
+	    $label = '';
+	    $rules = '';
 
-		return $valid;
+	    if(array_key_exists('label', $rule))
+	    {
+		$label = $rule['label'];
+	    }
+
+	    if(array_key_exists('rules', $rule))
+	    {
+		$rules = $rule['rules'];
+	    }
+
+	    $this->addRule($field, $rules, $label);
 	}
 
-	/**
-	 * Will load all the rules contained in the
-	 * given array.
-	 * Example structure :
-	 *  ---------------------------------------------
-	 * |
-	 * | array(
-	 * |     'nom' =>
-	 * |         array(
-	 * |             'label' => 'family name',
-	 * |             'rules' => 'minLenght 3|maxLength 14|alpha'
-	 * |         ),
-	 * |     'email' =>
-	 * |         array(
-	 * |             'label' => 'email adress',
-	 * |             'rules' => 'email'
-	 * |         ),
-	 * | )
-	 * |
-	 *  ---------------------------------------------
-	 *
-	 * @return HappyField self
-	 */
-	public function loadRulesFromArray($array)
-	{
-		foreach ($array as $field => $rule) {
-
-			$label = '';
-			$rules = '';
-
-			if(array_key_exists('label', $rule))
-			{
-				$label = $rule['label'];
-			}
-
-			if(array_key_exists('rules', $rule))
-			{
-				$rules = $rule['rules'];
-			}
-
-			$this->addRule($field, $rules, $label);
-		}
-
-		return $this;
-	}
+	return $this;
+    }
 
     /**
      * @TODO : SERIOUSLY NEED TO HANDLE NICE ERROR MESSAGES !
@@ -164,78 +164,82 @@ class HappyField {
      */
     public function getRulesErrors()
     {
-        return $this->errorReport;
+	return $this->errorReport;
     }
 
-	/**
-	 * Will set the fields to be validated.
-	 *
-	 * @param array $fields an array with the fields names as
-	 * keys, and the fields values as values. You can
-	 * directly pass the $_POST or $_GET array.
-	 *
-	 * @throws Exception if the fields aren't valid and [showErrors] is true
-	 * @return boolean true if success, false otherwise.
-	 */
-	public function setFields($fields)
+    /**
+     * Will set the fields to be validated.
+     *
+     * @param array $fields an array with the fields names as
+     * keys, and the fields values as values. You can
+     * directly pass the $_POST or $_GET array.
+     *
+     * @throws Exception if the fields aren't valid and [showErrors] is true
+     * @return boolean true if success, false otherwise.
+     */
+    public function setFields($fields)
+    {
+	$valid = is_array($fields) and count($fields);
+	if($valid)
 	{
-		$valid = is_array($fields) and count($fields);
-		if($valid)
-		{
-			$this->fields = $fields;
-		}
-		else if($this->showErrors)
-		{
-			throw new Exception("Unable to set the fields : ".$fields, 1);
-		}
-
-		return $valid;
+	    $this->fields = $fields;
+	}
+	else if($this->showErrors)
+	{
+	    throw new Exception("Unable to set the fields : ".$fields, 1);
 	}
 
-	/**
-	 * Will launch the check of each added rule
-	 * according to the values of the supplied fields.
-	 *
-	 * @return boolean true if success, false otherwise.
+	return $valid;
+    }
+
+    /**
+     * Will launch the check of each added rule
+     * according to the values of the supplied fields.
+     *
+     * @return boolean true if success, false otherwise.
+     */
+    public function check()
+    {
+	// If we have no fields or no rules, run away !
+	/*
+	   if(count($this->fields) > 0 && count($this->rules) == 0)
+	   return false;
 	 */
-	public function check()
-	{
-		// If we have no fields or no rules, run away !
-		/*
-		if(count($this->fields) > 0 && count($this->rules) == 0)
-			return false;
-		*/
 
-		$success = True;
+	$success = True;
 
-		foreach ($this->rules as $rule) {
+	foreach ($this->rules as $rule) {
 
-	/*		// if we have a rule without his field, the validation fail.
+	    /*		// if we have a rule without his field, the validation fail.
 			if(!array_key_exists($rule->getField(), $this->fields))
 			{
-				$success = False;
-				echo "<p>key do not exist : ".$rule->getField()." in fields [ ".arr2str($this->fields)." ] </p>";
+			$success = False;
+			echo "<p>key do not exist : ".$rule->getField()." in fields [ ".arr2str($this->fields)." ] </p>";
 			}
 			else
 			{*/
-				//echo "key exist : ".$rule->getField();
-                if(array_key_exists($rule->getField(),$this->fields))
-                {
-				    $result = $rule->checkRules($this->fields[$rule->getField()]);
-                }
+	    echo "key exist : ".$rule->getField();
+	    $result = true;
+	    if(array_key_exists($rule->getField(),$this->fields))
+	    {
+		echo("<p>Rules to check : ");
+		echo($this->fields[$rule->getField()]);
+		echo("</p>");
+		$result = $rule->checkRules($this->fields[$rule->getField()]);
+	    }
 
-				if(!$result)
-                {
-                    $this->errorReport[$rule->getField()] = $rule->getFieldErrors();
-					$success = false;
-                }
-		/*	}*/
-		}
-        if($success == False)
-            echo '<p>Resultat faux !</p>';
-
-		return $success;
+	    if(!$result)
+	    {
+		$this->errorReport[$rule->getField()] = $rule->getFieldErrors();
+		var_dump($this->errorReport);
+		$success = false;
+	    }
 	}
+	if($success == False)
+	    echo '<p>Resultat faux !</p>';
+
+	return $success;
+    }
 
     /**
      * Sets the value of showErrors.
@@ -246,9 +250,9 @@ class HappyField {
      */
     public function showErrors($showErrors)
     {
-        $this->showErrors = $showErrors;
+	$this->showErrors = $showErrors;
 
-        return $this;
+	return $this;
     }
 
 
@@ -260,7 +264,7 @@ class HappyField {
      */
     public function getFields()
     {
-        return $this->fields;
+	return $this->fields;
     }
 
     /**
@@ -271,12 +275,12 @@ class HappyField {
      */
     public function getRule($fieldName)
     {
-    	if(array_key_exists($fieldName, $this->rules))
-    		return $this->rules[$fieldName];
-    	else
-    		throw new \Exception("Key $fieldName not found in the rules !", 1);
-    		
-    		//return false;
+	if(array_key_exists($fieldName, $this->rules))
+	    return $this->rules[$fieldName];
+	else
+	    throw new \Exception("Key $fieldName not found in the rules !", 1);
+
+	//return false;
     }
 
     /**
@@ -285,7 +289,7 @@ class HappyField {
      */
     public function getRules()
     {
-    	return $this->rules;
+	return $this->rules;
     }
 
     /**
@@ -294,8 +298,8 @@ class HappyField {
      */
     public function clearRules()
     {
-    	$this->rules = array();
-    	return $this;
+	$this->rules = array();
+	return $this;
     }
 
 }

@@ -218,20 +218,15 @@ class HappyField {
 			}
 			else
 			{*/
-	    echo "key exist : ".$rule->getField();
 	    $result = true;
 	    if(array_key_exists($rule->getField(),$this->fields))
 	    {
-		echo("<p>Rules to check : ");
-		echo($this->fields[$rule->getField()]);
-		echo("</p>");
 		$result = $rule->checkRules($this->fields[$rule->getField()]);
 	    }
 
 	    if(!$result)
 	    {
 		$this->errorReport[$rule->getField()] = $rule->getFieldErrors();
-		var_dump($this->errorReport);
 		$success = false;
 	    }
 	}
